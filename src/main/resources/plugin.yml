@@ -1,0 +1,4 @@
+name: System
+version: ${project.version}
+main: de.superlandnetwork.bungeecord.system.Main
+description: ${project.description}
