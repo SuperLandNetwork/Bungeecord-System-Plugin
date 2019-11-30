@@ -26,40 +26,27 @@
  *
  */
 
-package de.superlandnetwork.bungeecord.system;
+package de.superlandnetwork.bungeecord.system.listeners;
 
-import de.superlandnetwork.bungeecord.api.database.MySQL;
-import de.superlandnetwork.bungeecord.system.commands.CommandSpy;
-import de.superlandnetwork.bungeecord.system.utils.Config;
-import net.md_5.bungee.api.plugin.Plugin;
-import net.md_5.bungee.config.Configuration;
+import de.superlandnetwork.bungeecord.system.api.PlayerAPI;
+import net.md_5.bungee.api.event.LoginEvent;
+import net.md_5.bungee.api.plugin.Listener;
+import net.md_5.bungee.event.EventHandler;
 
-public final class Main extends Plugin {
+import java.sql.SQLException;
 
-    private static Main instance;
+public class JoinListener implements Listener {
 
-    @Override
-    public void onEnable() {
-        instance = this;
-        getProxy().getPluginManager().registerCommand(this, new CommandSpy(this));
+    @EventHandler
+    public void onLogin(LoginEvent e ) {
+        try {
+            PlayerAPI api = new PlayerAPI(e.getConnection().getUniqueId());
+            api.connect();
+            api.updatePlayer(e.getConnection().getName());
+            api.close();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
     }
 
-    @Override
-    public void onDisable() {
-        // Plugin shutdown logic
-    }
-
-    public static Main getInstance() {
-        return instance;
-    }
-
-    public MySQL getMySQL() {
-        return new MySQL(getConfig().getString("mysql.host"), getConfig().getString("mysql.port"),
-                getConfig().getString("mysql.database"), getConfig().getString("mysql.username"),
-                getConfig().getString("mysql.password"));
-    }
-
-    public Configuration getConfig() {
-        return new Config().getConfiguration();
-    }
 }

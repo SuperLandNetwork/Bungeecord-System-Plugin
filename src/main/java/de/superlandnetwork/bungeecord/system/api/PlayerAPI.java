@@ -26,40 +26,49 @@
  *
  */
 
-package de.superlandnetwork.bungeecord.system;
+package de.superlandnetwork.bungeecord.system.api;
 
 import de.superlandnetwork.bungeecord.api.database.MySQL;
-import de.superlandnetwork.bungeecord.system.commands.CommandSpy;
-import de.superlandnetwork.bungeecord.system.utils.Config;
-import net.md_5.bungee.api.plugin.Plugin;
-import net.md_5.bungee.config.Configuration;
+import de.superlandnetwork.bungeecord.system.Main;
 
-public final class Main extends Plugin {
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.UUID;
 
-    private static Main instance;
+public class PlayerAPI {
 
-    @Override
-    public void onEnable() {
-        instance = this;
-        getProxy().getPluginManager().registerCommand(this, new CommandSpy(this));
+    private MySQL mySQL;
+    private UUID uuid;
+
+    public PlayerAPI(UUID uuid) {
+        mySQL = Main.getInstance().getMySQL();
+        this.uuid = uuid;
     }
 
-    @Override
-    public void onDisable() {
-        // Plugin shutdown logic
+    public void connect() throws SQLException {
+        mySQL.connect();
     }
 
-    public static Main getInstance() {
-        return instance;
+    public void close() throws SQLException {
+        mySQL.close();
     }
 
-    public MySQL getMySQL() {
-        return new MySQL(getConfig().getString("mysql.host"), getConfig().getString("mysql.port"),
-                getConfig().getString("mysql.database"), getConfig().getString("mysql.username"),
-                getConfig().getString("mysql.password"));
+    public void updatePlayer(String name) throws SQLException {
+        String sql = "SELECT `id` FROM `sln_mc_users` WHERE `uuid`='"+uuid.toString()+"'";
+        ResultSet rs = mySQL.getResult(sql);
+        if (rs.next()) {
+            String sql2 = "UPDATE `sln_mc_users` SET `last_name`='"+name+"' WHERE `uuid`='"+uuid.toString()+"'";
+            mySQL.update(sql);
+        } else {
+            String sql2 = "INSERT INTO `sln_mc_users` (`uuid`, `last_name`) VALUES ('" + uuid.toString() + "', '" + name + "')";
+            mySQL.update(sql);
+        }
+        String sql2 = "SELECT `id` FROM `sln_users` WHERE `uuid`='"+uuid.toString()+"'";
+        ResultSet rs2 = mySQL.getResult(sql2);
+        if (!rs2.next()) {
+            String sql3 = "INSERT INTO `sln_users` (`uuid`) VALUES ('" + uuid.toString() + "')";
+            mySQL.update(sql3);
+        }
     }
 
-    public Configuration getConfig() {
-        return new Config().getConfiguration();
-    }
 }
