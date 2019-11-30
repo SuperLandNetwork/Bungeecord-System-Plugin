@@ -29,7 +29,7 @@
 package de.superlandnetwork.bungeecord.system.listeners;
 
 import de.superlandnetwork.bungeecord.system.api.PlayerAPI;
-import net.md_5.bungee.api.event.LoginEvent;
+import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 
@@ -38,11 +38,11 @@ import java.sql.SQLException;
 public class JoinListener implements Listener {
 
     @EventHandler
-    public void onLogin(LoginEvent e ) {
+    public void onLogin(PostLoginEvent e ) {
         try {
-            PlayerAPI api = new PlayerAPI(e.getConnection().getUniqueId());
+            PlayerAPI api = new PlayerAPI(e.getPlayer().getUniqueId());
             api.connect();
-            api.updatePlayer(e.getConnection().getName());
+            api.updatePlayer(e.getPlayer().getName());
             api.close();
         } catch (SQLException ex) {
             ex.printStackTrace();
