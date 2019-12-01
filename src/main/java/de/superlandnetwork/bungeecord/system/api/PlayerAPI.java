@@ -81,7 +81,7 @@ public class PlayerAPI {
             if (i == 1) continue;
             if (user.getTimes().get(i) == -1) continue;
             long time = user.getTimes().get(i);
-            if (time < System.currentTimeMillis()) continue;
+            if (time > System.currentTimeMillis()) continue;
             permissionAPI.removeGroup(uuid, i, time);
         }
         permissionAPI.close();
