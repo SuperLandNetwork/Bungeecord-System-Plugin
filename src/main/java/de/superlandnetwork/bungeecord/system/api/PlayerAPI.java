@@ -58,10 +58,10 @@ public class PlayerAPI {
         ResultSet rs = mySQL.getResult(sql);
         if (rs.next()) {
             String sql2 = "UPDATE `sln_mc_users` SET `last_name`='"+name+"' WHERE `uuid`='"+uuid.toString()+"'";
-            mySQL.update(sql);
+            mySQL.update(sql2);
         } else {
             String sql2 = "INSERT INTO `sln_mc_users` (`uuid`, `last_name`) VALUES ('" + uuid.toString() + "', '" + name + "')";
-            mySQL.update(sql);
+            mySQL.update(sql2);
         }
         String sql2 = "SELECT `id` FROM `sln_users` WHERE `uuid`='"+uuid.toString()+"'";
         ResultSet rs2 = mySQL.getResult(sql2);
