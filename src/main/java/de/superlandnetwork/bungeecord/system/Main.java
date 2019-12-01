@@ -60,4 +60,5 @@ public final class Main extends Plugin {
         Properties settings = new Config().getSettingsProps();
         return new MySQL(settings.getProperty("host"), settings.getProperty("port"), settings.getProperty("database"), settings.getProperty("username"), settings.getProperty("password"));
     }
+
 }

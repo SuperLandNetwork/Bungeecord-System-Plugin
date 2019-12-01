@@ -43,6 +43,7 @@ public class JoinListener implements Listener {
             PlayerAPI api = new PlayerAPI(e.getPlayer().getUniqueId());
             api.connect();
             api.updatePlayer(e.getPlayer().getName());
+            api.checkRankTime();
             api.close();
         } catch (SQLException ex) {
             ex.printStackTrace();

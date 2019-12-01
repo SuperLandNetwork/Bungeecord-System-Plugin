@@ -29,6 +29,8 @@
 package de.superlandnetwork.bungeecord.system.api;
 
 import de.superlandnetwork.bungeecord.api.database.MySQL;
+import de.superlandnetwork.bungeecord.permission.api.PermissionAPI;
+import de.superlandnetwork.bungeecord.permission.api.User;
 import de.superlandnetwork.bungeecord.system.Main;
 
 import java.sql.ResultSet;
@@ -69,6 +71,20 @@ public class PlayerAPI {
             String sql3 = "INSERT INTO `sln_users` (`uuid`) VALUES ('" + uuid.toString() + "')";
             mySQL.update(sql3);
         }
+    }
+
+    public void checkRankTime() throws SQLException {
+        PermissionAPI permissionAPI = new PermissionAPI();
+        permissionAPI.connect();
+        User user = permissionAPI.getUser(uuid);
+        for (int i : user.getGroupIds()) {
+            if (i == 1) continue;
+            if (user.getTimes().get(i) == -1) continue;
+            long time = user.getTimes().get(i);
+            if (time < System.currentTimeMillis()) continue;
+            permissionAPI.removeGroup(uuid, i, time);
+        }
+        permissionAPI.close();
     }
 
 }
