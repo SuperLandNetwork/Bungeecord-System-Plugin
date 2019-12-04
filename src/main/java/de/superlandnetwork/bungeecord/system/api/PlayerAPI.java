@@ -56,16 +56,16 @@ public class PlayerAPI {
     }
 
     public void updatePlayer(String name) throws SQLException {
-        String sql = "SELECT `id` FROM `sln_mc_users` WHERE `uuid`='"+uuid.toString()+"'";
+        String sql = "SELECT `id` FROM `sln_mc_users` WHERE `uuid`='" + uuid.toString() + "'";
         ResultSet rs = mySQL.getResult(sql);
         if (rs.next()) {
-            String sql2 = "UPDATE `sln_mc_users` SET `last_name`='"+name+"' WHERE `uuid`='"+uuid.toString()+"'";
+            String sql2 = "UPDATE `sln_mc_users` SET `last_name`='" + name + "' WHERE `uuid`='" + uuid.toString() + "'";
             mySQL.update(sql2);
         } else {
             String sql2 = "INSERT INTO `sln_mc_users` (`uuid`, `last_name`) VALUES ('" + uuid.toString() + "', '" + name + "')";
             mySQL.update(sql2);
         }
-        String sql2 = "SELECT `id` FROM `sln_users` WHERE `uuid`='"+uuid.toString()+"'";
+        String sql2 = "SELECT `id` FROM `sln_users` WHERE `uuid`='" + uuid.toString() + "'";
         ResultSet rs2 = mySQL.getResult(sql2);
         if (!rs2.next()) {
             String sql3 = "INSERT INTO `sln_users` (`uuid`) VALUES ('" + uuid.toString() + "')";
@@ -85,6 +85,23 @@ public class PlayerAPI {
             permissionAPI.removeGroup(uuid, i, time);
         }
         permissionAPI.close();
+    }
+
+    public void addCoins(int i) {
+        // TODO
+    }
+
+    public void takeCoins(int i) {
+        // TODO
+    }
+
+    public int getCoins() {
+        // TODO
+        return 0;
+    }
+
+    public void setCoins(int i) {
+        // TODO
     }
 
 }

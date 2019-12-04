@@ -30,12 +30,13 @@ package de.superlandnetwork.bungeecord.system.commands;
 
 import de.superlandnetwork.bungeecord.system.Main;
 import net.md_5.bungee.api.CommandSender;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 
-public class CommandSpy extends Command {
+public class CommandEco extends Command {
 
-    public CommandSpy(Main m) {
-        super("commandspy", "bungeesystem.command.commandspy", "");
+    public CommandEco(Main m) {
+        super("eco", "bungeesystem.command.eco");
     }
 
     /**
@@ -46,6 +47,7 @@ public class CommandSpy extends Command {
      */
     @Override
     public void execute(CommandSender sender, String[] args) {
-
+        if (!(sender instanceof ProxiedPlayer)) return;
+        // TODO
     }
 }

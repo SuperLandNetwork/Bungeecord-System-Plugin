@@ -29,10 +29,13 @@
 package de.superlandnetwork.bungeecord.system;
 
 import de.superlandnetwork.bungeecord.api.database.MySQL;
-import de.superlandnetwork.bungeecord.system.commands.CommandSpy;
+import de.superlandnetwork.bungeecord.system.commands.*;
+import de.superlandnetwork.bungeecord.system.listeners.ChatListener;
 import de.superlandnetwork.bungeecord.system.listeners.JoinListener;
+import de.superlandnetwork.bungeecord.system.listeners.MotdListener;
 import de.superlandnetwork.bungeecord.system.utils.Config;
 import net.md_5.bungee.api.plugin.Plugin;
+import net.md_5.bungee.api.plugin.PluginManager;
 
 import java.util.Properties;
 
@@ -40,20 +43,34 @@ public final class Main extends Plugin {
 
     private static Main instance;
 
+    public static Main getInstance() {
+        return instance;
+    }
+
     @Override
     public void onEnable() {
         instance = this;
-        getProxy().getPluginManager().registerCommand(this, new CommandSpy(this));
-        getProxy().getPluginManager().registerListener(this, new JoinListener());
+        PluginManager pl = getProxy().getPluginManager();
+        pl.registerCommand(this, new CommandDiscord(this));
+        pl.registerCommand(this, new CommandEco(this));
+        pl.registerCommand(this, new CommandFriend(this));
+        pl.registerCommand(this, new CommandHelp(this));
+        pl.registerCommand(this, new CommandJumpTo(this));
+        pl.registerCommand(this, new CommandMoney(this));
+        pl.registerCommand(this, new CommandMsg(this));
+        pl.registerCommand(this, new CommandParty(this));
+        pl.registerCommand(this, new CommandPing(this));
+        pl.registerCommand(this, new CommandReport(this));
+        pl.registerCommand(this, new CommandTeamChat(this));
+        pl.registerCommand(this, new CommandTs(this));
+        pl.registerListener(this, new ChatListener());
+        pl.registerListener(this, new JoinListener());
+        pl.registerListener(this, new MotdListener());
     }
 
     @Override
     public void onDisable() {
         // Plugin shutdown logic
-    }
-
-    public static Main getInstance() {
-        return instance;
     }
 
     public MySQL getMySQL() {

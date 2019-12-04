@@ -28,25 +28,27 @@
 
 package de.superlandnetwork.bungeecord.system.listeners;
 
-import de.superlandnetwork.bungeecord.system.api.PlayerAPI;
-import net.md_5.bungee.api.event.PostLoginEvent;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.api.event.ChatEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
 
-import java.sql.SQLException;
-
-public class JoinListener implements Listener {
+public class ChatListener implements Listener {
 
     @EventHandler
-    public void onLogin(PostLoginEvent e) {
-        try {
-            PlayerAPI api = new PlayerAPI(e.getPlayer().getUniqueId());
-            api.connect();
-            api.updatePlayer(e.getPlayer().getName());
-            api.checkRankTime();
-            api.close();
-        } catch (SQLException ex) {
-            ex.printStackTrace();
+    public void onChat(ChatEvent e) {
+        if (!e.isCommand()) return;
+        if (!(e.getSender() instanceof ProxiedPlayer)) return;
+        ProxiedPlayer p = (ProxiedPlayer) e.getSender();
+        String s = e.getMessage().toLowerCase();
+        if (s.startsWith("/pl") || s.startsWith("/plugin") || s.startsWith("/?") ||
+                s.startsWith("/ver") || s.startsWith("/version") || s.startsWith("/about") ||
+                s.startsWith("/bungee")) {
+            if (!p.hasPermission("bungeesystem.command.plugin")) e.setCancelled(true);
+            return;
+        }
+        if (s.startsWith("/me")) {
+            if (!p.hasPermission("bungeesystem.command.me")) e.setCancelled(true);
         }
     }
 

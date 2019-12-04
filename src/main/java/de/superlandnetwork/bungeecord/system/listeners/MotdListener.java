@@ -28,26 +28,38 @@
 
 package de.superlandnetwork.bungeecord.system.listeners;
 
-import de.superlandnetwork.bungeecord.system.api.PlayerAPI;
-import net.md_5.bungee.api.event.PostLoginEvent;
+import net.md_5.bungee.api.ServerPing;
+import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.event.ProxyPingEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
+import net.md_5.bungee.event.EventPriority;
 
-import java.sql.SQLException;
+import java.util.UUID;
 
-public class JoinListener implements Listener {
+public class MotdListener implements Listener {
 
-    @EventHandler
-    public void onLogin(PostLoginEvent e) {
-        try {
-            PlayerAPI api = new PlayerAPI(e.getPlayer().getUniqueId());
-            api.connect();
-            api.updatePlayer(e.getPlayer().getName());
-            api.checkRankTime();
-            api.close();
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        }
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onPing(ProxyPingEvent e) {
+        ServerPing response = e.getResponse();
+        ServerPing.Players players = response.getPlayers();
+        ServerPing.Protocol version = response.getVersion();
+
+        version.setName("SuperLandNetwork.de 1.14.4");
+        version.setProtocol(498);
+        players.setMax(100);
+        players.setSample(new ServerPing.PlayerInfo[]{
+                new ServerPing.PlayerInfo("§7» §aSuperLandNetwork.de", UUID.randomUUID()),
+                new ServerPing.PlayerInfo("§7» §cMC: 1.14.4", UUID.randomUUID()),
+                new ServerPing.PlayerInfo("§7» §4Maintenance", UUID.randomUUID()),
+                new ServerPing.PlayerInfo("§7» §bwww.SuperLandNetwork.de", UUID.randomUUID()),
+        });
+
+        response.setVersion(version);
+        response.setPlayers(players);
+        response.setDescriptionComponent(new TextComponent("§aSuperLandNetwork.de §7» §aMinecraft Server §7» §b1.14.4" +
+                "     " +
+                "§7» §4Maintenance!"));
     }
 
 }

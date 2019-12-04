@@ -26,28 +26,28 @@
  *
  */
 
-package de.superlandnetwork.bungeecord.system.listeners;
+package de.superlandnetwork.bungeecord.system.commands;
 
-import de.superlandnetwork.bungeecord.system.api.PlayerAPI;
-import net.md_5.bungee.api.event.PostLoginEvent;
-import net.md_5.bungee.api.plugin.Listener;
-import net.md_5.bungee.event.EventHandler;
+import de.superlandnetwork.bungeecord.system.Main;
+import net.md_5.bungee.api.CommandSender;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.api.plugin.Command;
 
-import java.sql.SQLException;
+public class CommandMsg extends Command {
 
-public class JoinListener implements Listener {
-
-    @EventHandler
-    public void onLogin(PostLoginEvent e) {
-        try {
-            PlayerAPI api = new PlayerAPI(e.getPlayer().getUniqueId());
-            api.connect();
-            api.updatePlayer(e.getPlayer().getName());
-            api.checkRankTime();
-            api.close();
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        }
+    public CommandMsg(Main m) {
+        super("msg", "", "tell");
     }
 
+    /**
+     * Execute this command with the specified sender and arguments.
+     *
+     * @param sender the executor of this command
+     * @param args   arguments used to invoke this command
+     */
+    @Override
+    public void execute(CommandSender sender, String[] args) {
+        if (!(sender instanceof ProxiedPlayer)) return;
+        // TODO
+    }
 }
