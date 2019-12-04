@@ -28,10 +28,10 @@
 
 package de.superlandnetwork.bungeecord.system.api;
 
-import de.superlandnetwork.bungeecord.api.database.MySQL;
 import de.superlandnetwork.bungeecord.permission.api.PermissionAPI;
 import de.superlandnetwork.bungeecord.permission.api.User;
 import de.superlandnetwork.bungeecord.system.Main;
+import de.superlandnetwork.lib.database.MySQL;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

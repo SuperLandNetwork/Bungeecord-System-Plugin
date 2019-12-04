@@ -60,6 +60,7 @@ public class MotdListener implements Listener {
         response.setDescriptionComponent(new TextComponent("§aSuperLandNetwork.de §7» §aMinecraft Server §7» §b1.14.4" +
                 "     " +
                 "§7» §4Maintenance!"));
+        System.out.println("Debug: " + e.getConnection().getVersion());
     }
 
 }

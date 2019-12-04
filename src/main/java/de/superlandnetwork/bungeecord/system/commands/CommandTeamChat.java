@@ -30,6 +30,7 @@ package de.superlandnetwork.bungeecord.system.commands;
 
 import de.superlandnetwork.bungeecord.permission.api.PermissionAPI;
 import de.superlandnetwork.bungeecord.system.Main;
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -37,7 +38,6 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 
 import java.sql.SQLException;
-import java.util.Optional;
 
 public class CommandTeamChat extends Command {
 
@@ -67,11 +67,10 @@ public class CommandTeamChat extends Command {
                 sb.append(a);
             }
 
-            Optional<String> s = api.getChat(api.getHighestVisibleGroup(p.getUniqueId()));
-            s.ifPresent(s1 -> {
+            api.getChat(api.getHighestVisibleGroup(p.getUniqueId())).ifPresent(s -> {
                 for (ProxiedPlayer players : ProxyServer.getInstance().getPlayers()) {
                     if (players.hasPermission("bungeesystem.command.teamchat")) {
-                        players.sendMessage(new TextComponent("§7[§5§lTeam§7] " + s1 + p.getDisplayName() + "§7: §e" + sb.toString()));
+                        players.sendMessage(new TextComponent("§7[§5§lTeam§7] " + ChatColor.translateAlternateColorCodes('&', s) + p.getDisplayName() + "§7: §e" + sb.toString()));
                     }
                 }
             });

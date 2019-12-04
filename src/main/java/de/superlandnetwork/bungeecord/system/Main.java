@@ -28,12 +28,12 @@
 
 package de.superlandnetwork.bungeecord.system;
 
-import de.superlandnetwork.bungeecord.api.database.MySQL;
 import de.superlandnetwork.bungeecord.system.commands.*;
 import de.superlandnetwork.bungeecord.system.listeners.ChatListener;
 import de.superlandnetwork.bungeecord.system.listeners.JoinListener;
 import de.superlandnetwork.bungeecord.system.listeners.MotdListener;
 import de.superlandnetwork.bungeecord.system.utils.Config;
+import de.superlandnetwork.lib.database.MySQL;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.api.plugin.PluginManager;
 

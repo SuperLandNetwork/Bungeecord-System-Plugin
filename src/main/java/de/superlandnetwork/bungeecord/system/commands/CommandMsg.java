@@ -28,10 +28,16 @@
 
 package de.superlandnetwork.bungeecord.system.commands;
 
+import de.superlandnetwork.bungeecord.permission.api.PermissionAPI;
 import de.superlandnetwork.bungeecord.system.Main;
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
+import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
+
+import java.sql.SQLException;
 
 public class CommandMsg extends Command {
 
@@ -48,6 +54,33 @@ public class CommandMsg extends Command {
     @Override
     public void execute(CommandSender sender, String[] args) {
         if (!(sender instanceof ProxiedPlayer)) return;
-        // TODO
+        ProxiedPlayer p = (ProxiedPlayer) sender;
+        if (args.length < 2) return;
+        String target = args[0];
+
+        ProxiedPlayer t = ProxyServer.getInstance().getPlayer(target);
+        if (t == null) {
+            p.sendMessage(new TextComponent("§7[§4Freunde§7] §cDer Spieler ist nicht online!"));
+            return;
+        }
+
+        if (p.getUniqueId() == t.getUniqueId()) return;
+
+        StringBuilder sb = new StringBuilder();
+        for (int i = 1; i < args.length; i++) {
+            sb.append(args[i]);
+        }
+
+        try {
+            PermissionAPI api = new PermissionAPI();
+            api.connect();
+            api.getChat(api.getHighestVisibleGroup(t.getUniqueId())).ifPresent(s ->
+                    p.sendMessage(new TextComponent("§7[§4Freunde§7] §7Du -> " + ChatColor.translateAlternateColorCodes('&', s) + t.getDisplayName() + " §7: §e" + sb.toString())));
+            api.getChat(api.getHighestVisibleGroup(p.getUniqueId())).ifPresent(s ->
+                    t.sendMessage(new TextComponent("§7[§4Freunde§7] " + ChatColor.translateAlternateColorCodes('&', s) + p.getDisplayName() + " §7-> Dir §7: §e" + sb.toString())));
+            api.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }
