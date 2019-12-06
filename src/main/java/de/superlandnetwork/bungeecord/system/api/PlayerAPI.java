@@ -71,6 +71,7 @@ public class PlayerAPI {
             String sql3 = "INSERT INTO `sln_users` (`uuid`) VALUES ('" + uuid.toString() + "')";
             mySQL.update(sql3);
         }
+        new GMCBM_API().updateName(this.uuid, name);
     }
 
     public void checkRankTime() throws SQLException {
@@ -88,7 +89,7 @@ public class PlayerAPI {
     }
 
     public void addCoins(int i) {
-        // TODO
+        setCoins(getCoins()+i);
     }
 
     public void takeCoins(int i) {

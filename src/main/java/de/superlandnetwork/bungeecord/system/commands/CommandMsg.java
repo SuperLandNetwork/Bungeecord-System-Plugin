@@ -68,7 +68,10 @@ public class CommandMsg extends Command {
 
         StringBuilder sb = new StringBuilder();
         for (int i = 1; i < args.length; i++) {
-            sb.append(args[i]);
+            if (i == args.length-1)
+                sb.append(args[i]);
+            else
+                sb.append(args[i]).append(" ");
         }
 
         try {

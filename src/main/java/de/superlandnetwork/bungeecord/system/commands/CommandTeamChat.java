@@ -63,8 +63,11 @@ public class CommandTeamChat extends Command {
             api.connect();
 
             StringBuilder sb = new StringBuilder();
-            for (String a : args) {
-                sb.append(a);
+            for (int i = 0; i < args.length; i++) {
+                if (i == args.length-1)
+                    sb.append(args[i]);
+                else
+                    sb.append(args[i]).append(" ");
             }
 
             api.getChat(api.getHighestVisibleGroup(p.getUniqueId())).ifPresent(s -> {
