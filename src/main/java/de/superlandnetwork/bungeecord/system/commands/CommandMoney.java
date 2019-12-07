@@ -35,6 +35,8 @@ import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 
+import java.sql.SQLException;
+
 public class CommandMoney extends Command {
 
     public CommandMoney(Main m) {
@@ -51,6 +53,13 @@ public class CommandMoney extends Command {
     public void execute(CommandSender sender, String[] args) {
         if (!(sender instanceof ProxiedPlayer)) return;
         ProxiedPlayer p = (ProxiedPlayer) sender;
-        sender.sendMessage(new TextComponent("§aDein Kontostand: §6" + new PlayerAPI(p.getUniqueId()).getCoins()));
+        try {
+            PlayerAPI api = new PlayerAPI(p.getUniqueId());
+            api.connect();
+            sender.sendMessage(new TextComponent("§aDein Kontostand: §6" + api.getCoins()));
+            api.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }

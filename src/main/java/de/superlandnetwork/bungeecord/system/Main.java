@@ -32,12 +32,18 @@ import de.superlandnetwork.bungeecord.system.commands.*;
 import de.superlandnetwork.bungeecord.system.listeners.ChatListener;
 import de.superlandnetwork.bungeecord.system.listeners.JoinListener;
 import de.superlandnetwork.bungeecord.system.listeners.MotdListener;
-import de.superlandnetwork.bungeecord.system.utils.Config;
 import de.superlandnetwork.lib.database.MySQL;
 import net.md_5.bungee.api.plugin.Plugin;
 import net.md_5.bungee.api.plugin.PluginManager;
+import net.md_5.bungee.config.Configuration;
+import net.md_5.bungee.config.ConfigurationProvider;
+import net.md_5.bungee.config.YamlConfiguration;
 
-import java.util.Properties;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.util.Objects;
 
 public final class Main extends Plugin {
 
@@ -50,6 +56,54 @@ public final class Main extends Plugin {
     @Override
     public void onEnable() {
         instance = this;
+
+        saveDefaultConfig();
+
+        registerListener();
+        registerCommand();
+    }
+
+    @Override
+    public void onDisable() {
+        // Plugin shutdown logic
+    }
+
+    public MySQL getMySQL() {
+        return new MySQL(Objects.requireNonNull(getConfig()).getString("mysql.host"), getConfig().getString("mysql.port"), getConfig().getString("mysql.database"), getConfig().getString("mysql.username"), getConfig().getString("mysql.password"));
+    }
+
+    private Configuration getConfig() {
+        try {
+            return ConfigurationProvider.getProvider(YamlConfiguration.class).load(new File(getDataFolder(), "config.yml"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private void saveDefaultConfig() {
+        if (!getDataFolder().exists())
+            getDataFolder().mkdir();
+
+        File file = new File(getDataFolder(), "config.yml");
+
+        if (!file.exists()) {
+            try (InputStream in = getResourceAsStream("config.yml")) {
+                Files.copy(in, file.toPath());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void registerListener() {
+        PluginManager pl = getProxy().getPluginManager();
+        pl.registerListener(this, new ChatListener());
+        pl.registerListener(this, new JoinListener());
+        pl.registerListener(this, new MotdListener());
+    }
+
+    private void registerCommand() {
         PluginManager pl = getProxy().getPluginManager();
         pl.registerCommand(this, new CommandDiscord(this));
         pl.registerCommand(this, new CommandEco(this));
@@ -63,19 +117,6 @@ public final class Main extends Plugin {
         pl.registerCommand(this, new CommandReport(this));
         pl.registerCommand(this, new CommandTeamChat(this));
         pl.registerCommand(this, new CommandTs(this));
-        pl.registerListener(this, new ChatListener());
-        pl.registerListener(this, new JoinListener());
-        pl.registerListener(this, new MotdListener());
-    }
-
-    @Override
-    public void onDisable() {
-        // Plugin shutdown logic
-    }
-
-    public MySQL getMySQL() {
-        Properties settings = new Config().getSettingsProps();
-        return new MySQL(settings.getProperty("host"), settings.getProperty("port"), settings.getProperty("database"), settings.getProperty("username"), settings.getProperty("password"));
     }
 
 }

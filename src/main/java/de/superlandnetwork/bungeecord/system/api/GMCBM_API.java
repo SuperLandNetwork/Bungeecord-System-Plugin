@@ -29,6 +29,8 @@
 package de.superlandnetwork.bungeecord.system.api;
 
 import net.gmcbm.bungeecord.GMCBM;
+import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 import java.util.UUID;
 
@@ -37,6 +39,20 @@ public class GMCBM_API {
     public void updateName(UUID uuid, String name) {
         if(!GMCBM.getInstance().isWebMode()) return;
         GMCBM.getInstance().getWebAPI().updateName(uuid, name);
+    }
+
+    public UUID getUUID(String name) {
+        ProxiedPlayer p = ProxyServer.getInstance().getPlayer(name);
+        if (p != null)
+            return p.getUniqueId();
+        return GMCBM.getInstance().getUUID(name).orElse(null);
+    }
+
+    public String getPlayerName(UUID uuid) {
+        ProxiedPlayer p = ProxyServer.getInstance().getPlayer(uuid);
+        if (p != null)
+            return p.getName();
+        return null; // TODO
     }
 
 }

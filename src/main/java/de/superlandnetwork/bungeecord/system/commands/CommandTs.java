@@ -29,9 +29,14 @@
 package de.superlandnetwork.bungeecord.system.commands;
 
 import de.superlandnetwork.bungeecord.system.Main;
+import de.superlandnetwork.bungeecord.system.api.PlayerAPI;
 import net.md_5.bungee.api.CommandSender;
+import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
+
+import java.sql.SQLException;
+import java.util.Optional;
 
 public class CommandTs extends Command {
 
@@ -48,6 +53,71 @@ public class CommandTs extends Command {
     @Override
     public void execute(CommandSender sender, String[] args) {
         if (!(sender instanceof ProxiedPlayer)) return;
-        // TODO
+        ProxiedPlayer p = (ProxiedPlayer) sender;
+        if (args.length == 1) {
+            if (args[0].equalsIgnoreCase("show")) {
+                try {
+                    PlayerAPI api = new PlayerAPI(p.getUniqueId());
+                    api.connect();
+                    Optional<String> s = api.getTeamSpeak();
+                    if (s.isPresent())
+                        p.sendMessage(new TextComponent("§7[§3TS§7] §eVerknpfte Identität: §7" + s.get()));
+                    else
+                        p.sendMessage(new TextComponent("§7[§3TS§7] §cDu hast aktuell keine Identität verknpft!"));
+                    api.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+                return;
+            }
+            if (args[0].equalsIgnoreCase("remove")) {
+                try {
+                    PlayerAPI api = new PlayerAPI(p.getUniqueId());
+                    api.connect();
+                    if (api.getTeamSpeak().isPresent()) {
+                        api.removeTeamSpeak();
+                        p.sendMessage(new TextComponent("§7[§3TS§7] §aDeine Identität wurde entfernt!"));
+                    } else
+                        p.sendMessage(new TextComponent("§7[§3TS§7] §cDu hast keine Identität verknpft!"));
+                    api.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+                return;
+            }
+            sendHelp(p);
+            return;
+        }
+        if (args.length == 2) {
+            if (args[0].equalsIgnoreCase("set")) {
+                if (args[1].length() == 28 && args[1].endsWith("=")) {
+                    try {
+                        PlayerAPI api = new PlayerAPI(p.getUniqueId());
+                        api.connect();
+                        if (api.getTeamSpeak().isPresent())
+                            api.removeTeamSpeak();
+                        api.sendTeamSpeak(p.getName(), args[1]);
+                        p.sendMessage(new TextComponent("§7[§3TS§7] §aDeine Identität wurde gesetzt. §aBestätige diese nun bitte auf dem TeamSpeak!"));
+                        api.close();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                    return;
+                }
+                p.sendMessage(new TextComponent("§7[§3TS§7] §cDie Identität muss 28 Zeichen lang sein und mit einem '=' enden."));
+                return;
+            }
+            sendHelp(p);
+            return;
+        }
+        sendHelp(p);
     }
+
+    public void sendHelp(ProxiedPlayer p) {
+        p.sendMessage(new TextComponent("§7[§3TS§7] §6TeamSpeak Verwaltung"));
+        p.sendMessage(new TextComponent("§e/ts show §7Zeigt die aktuell verknpfte Identität"));
+        p.sendMessage(new TextComponent("§e/ts set <Identitt> §7Verknpft Identität mit deinem Minecraft-Account"));
+        p.sendMessage(new TextComponent("§e/ts remove §7Entfernt die aktuell verknpfte Identität"));
+    }
+
 }

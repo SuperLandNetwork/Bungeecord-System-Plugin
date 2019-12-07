@@ -35,6 +35,7 @@ import de.superlandnetwork.lib.database.MySQL;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Optional;
 import java.util.UUID;
 
 public class PlayerAPI {
@@ -88,21 +89,77 @@ public class PlayerAPI {
         permissionAPI.close();
     }
 
-    public void addCoins(int i) {
+    public void addCoins(int i) throws SQLException {
         setCoins(getCoins()+i);
     }
 
-    public void takeCoins(int i) {
-        // TODO
+    public void takeCoins(int i) throws SQLException {
+        setCoins(getCoins()-i);
     }
 
-    public int getCoins() {
-        // TODO
+    public int getCoins() throws SQLException {
+        String sql = "SELECT `coins` FROM `sln_mc_users` WHERE `uuid`='"+uuid.toString()+"'";
+        ResultSet rs = mySQL.getResult(sql);
+        if (rs.next())
+            return rs.getInt("coins");
         return 0;
     }
 
-    public void setCoins(int i) {
-        // TODO
+    public void setCoins(int i) throws SQLException {
+        String sql = "UPDATE `sln_mc_users` SET `coins`='"+i+"' WHERE `uuid`='"+uuid.toString()+"'";
+        mySQL.update(sql);
+    }
+
+    public Optional<String> getTeamSpeak() throws SQLException {
+        String sql = "SELECT `uid` FROM `sln_users` WHERE `uuid`='"+uuid.toString()+"'";
+        ResultSet rs = mySQL.getResult(sql);
+        if (rs.next())
+            return Optional.ofNullable(rs.getString("uid"));
+        return Optional.empty();
+    }
+
+    public void sendTeamSpeak(String name, String uid) throws SQLException {
+        String sql = "INSERT INTO `sln_verify`(`uuid`, `name`, `type`, `content`, `type_add`) VALUES ('"+uuid.toString()+"', '"+name+"', '1', '"+uid+"', '1')";
+        if (inProgressTeamSpeak())
+            sql = "UPDATE `sln_verify` SET `send`='0' WHERE `uuid`='"+uuid.toString()+"' AND `type`='1'";
+        mySQL.update(sql);
+    }
+
+    public void removeTeamSpeak() throws SQLException {
+        String sql = "INSERT INTO `sln_verify`(`uuid`, `type`, `type_add`) VALUES ('"+uuid.toString()+"', '1', '0')";
+        mySQL.update(sql);
+    }
+
+    public Optional<String> getDiscord() throws SQLException {
+        String sql = "SELECT `discord` FROM `sln_users` WHERE `uuid`='"+uuid.toString()+"'";
+        ResultSet rs = mySQL.getResult(sql);
+        if (rs.next())
+            return Optional.ofNullable(rs.getString("discord"));
+        return Optional.empty();
+    }
+
+    public void sendDiscord(String name, String discord) throws SQLException {
+        String sql = "INSERT INTO `sln_verify`(`uuid`, `name`, `type`, `content`, `type_add`) VALUES ('"+uuid.toString()+"', '"+name+"', '2', '"+discord+"', '1')";
+        if (inProgressDiscord())
+            sql = "UPDATE `sln_verify` SET `send`='0' WHERE `uuid`='"+uuid.toString()+"' AND `type`='2'";
+        mySQL.update(sql);
+    }
+
+    public void removeDiscord() throws SQLException {
+        String sql = "INSERT INTO `sln_verify`(`uuid`, `type`, `type_add`) VALUES ('"+uuid.toString()+"', '2', '0')";
+        mySQL.update(sql);
+    }
+
+    public boolean inProgressTeamSpeak() throws SQLException {
+        String sql = "SELECT `id` FROM `sln_verify` WHERE `uuid`='"+uuid.toString()+"' AND `type`='1'";
+        ResultSet rs = mySQL.getResult(sql);
+        return rs.next();
+    }
+
+    public boolean inProgressDiscord() throws SQLException {
+        String sql = "SELECT `id` FROM `sln_verify` WHERE `uuid`='"+uuid.toString()+"' AND `type`='2'";
+        ResultSet rs = mySQL.getResult(sql);
+        return rs.next();
     }
 
 }
